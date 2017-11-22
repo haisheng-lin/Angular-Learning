@@ -8,7 +8,7 @@
 
   <div fxFlex>
     <md-grid-list cols="2" rowHeight="200px">
-      <md-grid-tile *ngFor="let dish of dishes" (click)="onSelect(dish)">
+      <md-grid-tile *ngFor="let dish of dishes" [routerLink]="['/dishdetail', dish.id]">
         <img height="200px" src={{dish.image}} alt={{dish.name}}>
         <md-grid-tile-footer>
           <h1 md-line>{{dish.name | uppercase}}</h1>
@@ -17,7 +17,5 @@
     </md-grid-list>
   </div>
 
-  <!-- selectedDish 由 menu.component.ts 里的 onSelect() 赋值，然后赋值给 dish 这个 property，传进 app-dish-detail -->
-  <!-- app-dish-detail 如何获取 dish 这个 property 的所有信息？使用 Input Module -->
-  <app-dish-detail [dish]="selectedDish"></app-dish-detail>
+
 </div>
