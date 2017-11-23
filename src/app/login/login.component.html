@@ -1,0 +1,30 @@
+<md-toolbar md-dialog-title color="primary">
+  Login
+  <span class="flex-spacer"></span>
+  <button md-button md-dialog-close>&times;</button>
+</md-toolbar>
+
+<p>{{user | json}}</p>
+
+<form novalidate (ngSubmit)="onSubmit()">
+  <md-dialog-content>
+    <p>
+      <md-input-container>
+        <!-- [(ngModel)] 允许 two-way-binding -->
+        <!-- 虽然 user 在 login.component.ts 里没有这些属性，但是通过 two-way-binding 会创建这些属性并赋值 -->
+        <input mdInput [(ngModel)]="user.username" name="username" placeholder="Username" type="text" required>
+      </md-input-container>
+      <md-input-container>
+        <input mdInput [(ngModel)]="user.password" name="password" placeholder="Password" type="password" required>
+      </md-input-container>
+      <md-checkbox [(ngModel)]="user.remember" name="remember">
+        Remember Me
+      </md-checkbox>
+    </p>
+  </md-dialog-content>
+  <md-dialog-actions>
+    <span class="flex-spacer"></span>
+    <button md-button md-dialog-close>Cancel</button>
+    <button md-button type="submit" class="background-primary text-floral-white">Login</button>
+  </md-dialog-actions>
+</form>
