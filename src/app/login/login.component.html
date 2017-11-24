@@ -4,18 +4,28 @@
   <button md-button md-dialog-close>&times;</button>
 </md-toolbar>
 
-<p>{{user | json}}</p>
-
-<form novalidate (ngSubmit)="onSubmit()">
+<form novalidate #loginForm="ngForm" (ngSubmit)="onSubmit()">
   <md-dialog-content>
     <p>
-      <md-input-container>
+      <md-input-container dividerColor="{{ username.invalid && !username.pristine ? 'warn' : 'primary' }}">
         <!-- [(ngModel)] 允许 two-way-binding -->
         <!-- 虽然 user 在 login.component.ts 里没有这些属性，但是通过 two-way-binding 会创建这些属性并赋值 -->
-        <input mdInput [(ngModel)]="user.username" name="username" placeholder="Username" type="text" required>
+        <input mdInput [(ngModel)]="user.username" name="username" #username="ngModel" placeholder="Username" type="text" required>
+        <md-hint>
+          <!-- 如果 username 是 pristine (空白?) 则隐藏这部分 -->
+          <span [hidden]="username.pristine">
+            <!-- 如果 username 有 error on required，则不会隐藏；否则隐藏 -->
+            <span [hidden]="!username.errors?.required">username is required</span>
+          </span>
+        </md-hint>
       </md-input-container>
-      <md-input-container>
-        <input mdInput [(ngModel)]="user.password" name="password" placeholder="Password" type="password" required>
+      <md-input-container dividerColor="{{ password.invalid && !password.pristine ? 'warn' : 'primary' }}">
+        <input mdInput [(ngModel)]="user.password" name="password" #password="ngModel" placeholder="Password" type="password" required>
+        <md-hint>
+          <span [hidden]="password.pristine">
+            <span [hidden]="!password.errors?.required">password is required</span>
+          </span>
+        </md-hint>
       </md-input-container>
       <md-checkbox [(ngModel)]="user.remember" name="remember">
         Remember Me
@@ -25,6 +35,6 @@
   <md-dialog-actions>
     <span class="flex-spacer"></span>
     <button md-button md-dialog-close>Cancel</button>
-    <button md-button type="submit" class="background-primary text-floral-white">Login</button>
+    <button md-button type="submit" class="background-primary text-floral-white" [disabled]="loginForm.form.invalid">Login</button>
   </md-dialog-actions>
 </form>

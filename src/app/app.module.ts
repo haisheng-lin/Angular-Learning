@@ -1,3 +1,8 @@
+/** ======================= Modules ======================= */
+
+import { AppRoutingModule } from './app-routing/app-routing.module';
+import { FormsModule } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgModule } from '@angular/core';
@@ -7,6 +12,7 @@ import { FlexLayoutModule } from '@angular/flex-layout';
 import 'hammerjs';
 
 /** ======================= Components ======================= */
+
 import { AppComponent } from './app.component';
 import { MenuComponent } from './menu/menu.component';
 import { DishDetailComponent } from './dish-detail/dish-detail.component';
@@ -18,13 +24,10 @@ import { ContactComponent } from './contact/contact.component';
 import { LoginComponent } from './login/login.component';
 
 /** ======================= Services ======================= */
+
 import { DishService } from './services/dish.service';
 import { PromotionService } from './services/promotion.service';
 import { LeaderService } from './services/leader.service';
-
-/** ======================= Modules ======================= */
-import { AppRoutingModule } from './app-routing/app-routing.module';
-import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -44,7 +47,8 @@ import { FormsModule } from '@angular/forms';
     MaterialModule,
     FlexLayoutModule,
     AppRoutingModule,
-    FormsModule
+    FormsModule,
+    ReactiveFormsModule
   ],
   providers: [ DishService, PromotionService, LeaderService ],
   entryComponents: [
