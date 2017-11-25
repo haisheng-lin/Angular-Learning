@@ -9,10 +9,14 @@ export class LeaderService {
   constructor() { }
 
   getLeaders(): Promise<Leader[]> {
-    return Promise.resolve(LEADERS);
+    return new Promise(resolve => {
+      setTimeout(() => resolve(LEADERS), 2000);
+    });
   }
 
   getECLeader(): Promise<Leader> {
-    return Promise.resolve(LEADERS.filter((leader) => (leader.brief === 'EC'))[0]);
+    return new Promise(resolve => {
+      setTimeout(() => resolve(LEADERS.filter((leader) => (leader.brief === 'EC'))[0]), 2000);
+    });
   }
 }
