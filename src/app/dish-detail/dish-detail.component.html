@@ -31,8 +31,8 @@
     </md-card>
   </div>
 
-  <div fxFlex="40" class="container" fxLayout="column" *ngIf="dish">
-    <div fxFlex="10">
+  <div fxFlex="50" class="container" fxLayout="column" *ngIf="dish">
+    <div fxFlex>
       <md-list>
         <h3>Comments</h3>
         <md-list-item *ngFor="let comment of dish.comments">
@@ -45,21 +45,19 @@
       </md-list>
     </div>
 
-    <hr>
-
-    <div fxFlex="90">
-      <md-list *ngIf="commentForm.valid">
-        <md-list-item>
+    <div fxFlex>
+      <p>
+        <md-list-item *ngIf="commentForm.valid">
           <h1 md-line>{{ commentForm.get('comment').value }}</h1>
           <p md-line>{{ commentForm.get('rating').value }} Stars</p>
           <p md-line>
             <span>-- {{ commentForm.get('author').value }}</span>
           </p>
         </md-list-item>
-      </md-list>
+      </p>
       <form novalidate [formGroup]="commentForm" (ngSubmit)="onSubmit()">
         <p>
-          <md-input-container dividerColor="{{ formErrors.author ? 'warn' : 'primary' }}">
+          <md-input-container class="full-width" dividerColor="{{ formErrors.author ? 'warn' : 'primary' }}">
             <input mdInput formControlName="author" placeholder="Name" type="text" required>
             <md-hint>
               <span [hidden]="!(formErrors.author)">
@@ -72,7 +70,7 @@
           <md-slider formControlName="rating" min="0" max="5" step="1" thumbLabel tickInterval="1"></md-slider>
         </p>
         <p>
-          <md-input-container dividerColor="{{ formErrors.comment ? 'warn' : 'primary' }}">
+          <md-input-container class="full-width" dividerColor="{{ formErrors.comment ? 'warn' : 'primary' }}">
             <textarea mdInput formControlName="comment" placeholder="Your Comment" rows=12></textarea>
             <md-hint>
               <span [hidden]="!(formErrors.comment)">
@@ -89,6 +87,5 @@
   <div [hidden]="dish">
     <md-spinner></md-spinner> <h4>Loading . . . Please Wait</h4>
   </div>
-
 
 </div> <!-- Dish Detail End -->
