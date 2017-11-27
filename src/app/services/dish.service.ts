@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { Dish } from '../shared/dish';
 import { DISHES } from '../shared/dishes';
 
+import { Comment } from '../shared/comment';
+
 import { Observable } from 'rxjs/Observable';
 
 import 'rxjs/add/observable/of';
@@ -27,5 +29,10 @@ export class DishService {
 
   getDishIds(): Observable<number[]> {
     return Observable.of(DISHES.map(dish => dish.id)).delay(2000);
+  }
+
+  addComment(dishId: number, comment: Comment): void {
+    var dish = DISHES.filter((dish) => (dish.id === dishId))[0];
+    dish.comments.push(comment);
   }
 }
