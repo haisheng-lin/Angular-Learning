@@ -18,6 +18,6 @@ export class LeaderService {
   }
 
   getECLeader(): Observable<Leader> {
-    return Observable.of(LEADERS.filter((leader) => (leader.brief === 'EC'))[0]).delay(2000);
+    return Observable.of(LEADERS.filter((leader) => (leader.featured))[0]).delay(2000);
   }
 }

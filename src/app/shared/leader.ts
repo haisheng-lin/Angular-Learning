@@ -1,7 +1,9 @@
 export class Leader {
+  id: number;
   name: string;
-  position: string;
-  brief: string;
-  description: string;
   image: string;
+  designation: string;
+  abbr: string;
+  featured: boolean;
+  description: string;
 }
