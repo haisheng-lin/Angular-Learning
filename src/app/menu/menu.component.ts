@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Inject } from '@angular/core';
 
 import { Dish } from '../shared/dish';
 
@@ -13,18 +13,17 @@ export class MenuComponent implements OnInit {
 
   dishes: Dish[];
 
-  selectedDish: Dish; // 声明数据类型，由于初始化时没有赋值，所以一开始页面不显示 md-card 部分
+  errMess: string;
 
-  constructor(private dishService: DishService) { }
+  // BaseURL is injected from app.module.ts, which is in providers: {provide: 'BaseURL', useValue: baseURL}]
+  constructor(private dishService: DishService,
+  @Inject('BaseURL') private BaseURL) { }
 
   ngOnInit() {
     // 第一个 dishes 是 Promise resolve() 返回的结果
     this.dishService.getDishes()
-      .subscribe(dishes => this.dishes = dishes);
-  }
-
-  onSelect(dish: Dish) {
-    this.selectedDish = dish;
+      .subscribe(dishes => this.dishes = dishes,
+        errmess => this.errMess = <any>errmess );
   }
 
 }
