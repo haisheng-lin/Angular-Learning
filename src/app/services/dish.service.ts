@@ -3,8 +3,6 @@ import { Dish } from '../shared/dish';
 
 import { Http, Response } from '@angular/http';
 
-import { Comment } from '../shared/comment';
-
 import { Observable } from 'rxjs/Observable';
 
 import { baseURL } from '../shared/baseurl';
@@ -43,10 +41,5 @@ export class DishService {
     return this.getDishes()
       .map(dishes => { return dishes.map(dish => dish.id); })
       .catch(error => { return error; } );
-  }
-
-  addComment(dishId: number, comment: Comment): void {
-    // var dish = DISHES.filter((dish) => (dish.id === dishId))[0];
-    // dish.comments.push(comment);
   }
 }
