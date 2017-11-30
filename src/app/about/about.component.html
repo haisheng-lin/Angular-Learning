@@ -61,7 +61,7 @@
   <div fxFlex>
     <h2>Corporate Leadership</h2>
     <p>
-      <md-list>
+      <md-list *ngIf="leaders" [@expand]>
         <md-list-item *ngFor="let leader of leaders">
           <md-icon mat-list-icon>folder</md-icon>
           <h4 mat-line>{{ leader.name }} {{ leader.abbr }}</h4>
