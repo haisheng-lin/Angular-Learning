@@ -1,6 +1,7 @@
 import { trigger, state, style, animate, transition } from '@angular/animations';
 
 export function visibility() {
+  // @visibility 这个 visibility 与 trigger 命名必须匹配
   return trigger('visibility', [
     state('shown', style({
       transform: 'scale(1.0)',

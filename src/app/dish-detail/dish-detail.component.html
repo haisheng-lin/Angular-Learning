@@ -1,6 +1,7 @@
 <!-- Dish Detail Start -->
 <div class="container" fxLayout="row" fxLayout.sm="column" fxLayout.xs="column"
       fxLayoutAlign.gt-md="space-around center" fxLayoutGap="10px" fxLayoutGap.xs="0">
+  <!-- @visibility 这个 visibility 与 app.animation.ts 中的 trigger 命名必须匹配 -->
   <div fxFlex="40" *ngIf="dish" [@visibility]="visibility" [@expand]>
     <md-card>
       <md-card-header>
