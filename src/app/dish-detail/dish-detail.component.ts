@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 import { Params, ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
+import { trigger, state, style, animate, transition } from '@angular/animations';
 
 import { Dish } from '../shared/dish';
 import { DishService } from '../services/dish.service';
@@ -15,7 +16,20 @@ import 'rxjs/add/operator/switchMap';
 @Component({
   selector: 'app-dish-detail',
   templateUrl: './dish-detail.component.html',
-  styleUrls: ['./dish-detail.component.scss']
+  styleUrls: ['./dish-detail.component.scss'],
+  animations: [
+    trigger('visibility',[
+      state('shown', style({
+        transform: 'scale(1.0)',
+        opacity: 1 // completely visible
+      })),
+      state('hidden', style({
+        transform: 'scale(0.5)',
+        opacity: 0 // completely hidden
+      })),
+      transition('* => *', animate('0.5s ease-in-out'))
+    ])
+  ]
 })
 export class DishDetailComponent implements OnInit {
 
@@ -30,6 +44,8 @@ export class DishDetailComponent implements OnInit {
   comment: Comment;
 
   errMess: string;
+
+  visibility = 'shown';
 
   formErrors = {
     'author': '',
@@ -62,12 +78,18 @@ export class DishDetailComponent implements OnInit {
     this.dishService.getDishIds()
       .subscribe(dishIds => this.dishIds = dishIds);
 
+    // swithcMap() 里面做的是跳到新的 dish 的时候的操作，所以 current dish visibility = hidden
+    // subscribe() 获取到新的 dish，那么它的 visibility = shown
     this.route.params
-      .switchMap((params: Params) => this.dishService.getDish(+params['id']))
+      .switchMap((params: Params) => {
+        this.visibility = 'hidden';
+        return this.dishService.getDish(+params['id']);
+      })
       .subscribe(dish => {
         this.dish = dish;
         this.dishcopy = dish;
         this.setPrevNext(dish.id);
+        this.visibility = 'shown';
       }, errmess => this.errMess = <any>errmess);
   }
 
