@@ -2,7 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Feedback, ContactType } from '../shared/feedback';
 
-import { flyInOut } from '../animations/app.animation';
+import { flyInOut, expand } from '../animations/app.animation';
+
+import { FeedbackService } from '../services/feedback.service';
 
 @Component({
   selector: 'app-contact',
@@ -13,13 +15,14 @@ import { flyInOut } from '../animations/app.animation';
     'style': 'display: block;'
   },
   animations: [
-    flyInOut()
+    flyInOut(),
+    expand()
   ]
 })
 export class ContactComponent implements OnInit {
 
   feedbackForm: FormGroup;
-  feedback: Feedback;
+  
   contactType = ContactType;
   formErrors = {
     'firstname': '',
@@ -27,6 +30,18 @@ export class ContactComponent implements OnInit {
     'telnum': '',
     'email': ''
   };
+
+  // 获取输入的 Feedback
+  submitFeedback: Feedback;
+
+  // 获取服务器返回的 Feedback
+  returnedFeedback: Feedback;
+
+  // 判断 Feedback 是否正在提交
+  submitting = false;
+
+  // 判断是否正在 view feedback
+  viewing = false;
 
   validationMessages = {
     'firstname': {
@@ -49,7 +64,9 @@ export class ContactComponent implements OnInit {
     }
   };
 
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder,
+    private feedbackService: FeedbackService) {
+
     this.createForm();
   }
 
@@ -94,17 +111,39 @@ export class ContactComponent implements OnInit {
   }
 
   onSubmit() {
-    this.feedback = this.feedbackForm.value;
-    console.log(this.feedback);
+
+    this.submitting = true;
+    this.submitFeedback = this.feedbackForm.value;
+
+    this.feedbackService.submitFeedback(this.submitFeedback).subscribe(feedback => {
+      this.returnedFeedback = feedback;
+      this.submitting = false;
+
+      this.viewFeedback();
+    });
+  }
+
+  viewFeedback() {
+
+    this.viewing = true;
+
+    setTimeout(() => {
+      this.viewing = false;
+      this.reset();
+    }, 5000);
+  }
+
+  reset() {
     this.feedbackForm.reset({
       firstname: '',
       lastname: '',
       telnum: '',
       email: '',
-      agree: false,
+      agree: true,
       contacttype: 'None',
       message: ''
     });
+    this.submitFeedback = null;
+    this.returnedFeedback = null;
   }
-
 }

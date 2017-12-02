@@ -28,13 +28,13 @@ export class HomeComponent implements OnInit {
 
   dish: Dish;
   promotion: Promotion;
-
-  ecLeader: Leader;
+  leader: Leader;
 
   dishErrMess: string;
   promotionErrMess: string;
-  ecLeaderErrMess: string;
+  leaderErrMess: string;
 
+  // 这里的 BaseURL 来自于 app.module
   constructor(private dishService: DishService,
      private promotionService: PromotionService,
      private leaderService: LeaderService,
@@ -54,9 +54,9 @@ export class HomeComponent implements OnInit {
       errmess => this.promotionErrMess = errmess
     );
 
-    this.leaderService.getECLeader().subscribe(
-      ecLeader => this.ecLeader = ecLeader,
-      errmess => this.ecLeaderErrMess = errmess
+    this.leaderService.getFeaturedLeader().subscribe(
+      ecLeader => this.leader = ecLeader,
+      errmess => this.leaderErrMess = errmess
     );
   }
 
