@@ -139,7 +139,7 @@ export class ContactComponent implements OnInit {
       lastname: '',
       telnum: '',
       email: '',
-      agree: true,
+      agree: false,
       contacttype: 'None',
       message: ''
     });
