@@ -1,21 +1,18 @@
-import { Component, OnInit, Inject } from '@angular/core';
-
+import { Component, OnInit, Inject, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-
-import { Params, ActivatedRoute } from '@angular/router';
-import { Location } from '@angular/common';
-
 import { Dish } from '../shared/dish';
-import { DishService } from '../services/dish.service';
-
 import { Comment } from '../shared/comment';
+import { DishService } from '../services/dish.service';
+import { FavoriteService } from '../services/favorite.service';
 
+import { ActivatedRoute, Params } from '@angular/router';
+import { Location } from '@angular/common';
 import { visibility, flyInOut, expand } from '../animations/app.animation';
 
 import 'rxjs/add/operator/switchMap';
 
 @Component({
-  selector: 'app-dish-detail',
+  selector: 'app-dishdetail',
   templateUrl: './dish-detail.component.html',
   styleUrls: ['./dish-detail.component.scss'],
   host: {
@@ -23,126 +20,116 @@ import 'rxjs/add/operator/switchMap';
     'style': 'display: block;'
   },
   animations: [
-    visibility(),
     flyInOut(),
+    visibility(),
     expand()
   ]
 })
 export class DishDetailComponent implements OnInit {
 
+  @ViewChild('cform') commentFormDirective;
+
   dish: Dish;
-  dishcopy = null; // this is a restangular object
-
-  dishIds: number[];
-  prev: number;
-  next: number;
-
-  commentForm: FormGroup;
-  comment: Comment;
-
+  dishIds: String[];
+  prev: String;
+  next: String;
   errMess: string;
-
   visibility = 'shown';
+  favorite: boolean = false;
 
   formErrors = {
     'author': '',
-    'rating': '',
     'comment': ''
   };
 
   validationMessages = {
-    'author': {
-      'required': 'Author Name is required.',
-      'minlength': 'Author Name must be 2 characters long.'
-    },
-    'rating': {
-      'required': 'Rating is required.'
-    },
     'comment': {
-      'required': 'Comment is required.'
+      'required':      'Comment is required.'
     }
   };
 
-  constructor(private dishService: DishService,
-     private route: ActivatedRoute,
-     private location: Location,
-     private fb: FormBuilder,
-     @Inject('BaseURL') private BaseURL) {
-       this.createForm();
-     }
+  commentForm: FormGroup;
+
+  constructor(private dishservice: DishService,
+    private favoriteService: FavoriteService,
+    private route: ActivatedRoute,
+    private location: Location,
+    private fb: FormBuilder,
+    @Inject('BaseURL') private BaseURL) { }
 
   ngOnInit() {
-    this.dishService.getDishIds()
-      .subscribe(dishIds => this.dishIds = dishIds);
 
-    // swithcMap() 里面做的是跳到新的 dish 的时候的操作，所以 current dish visibility = hidden
-    // subscribe() 获取到新的 dish，那么它的 visibility = shown
+    this.createForm();
+
+    this.dishservice.getDishIds().subscribe(dishIds => this.dishIds = dishIds);
     this.route.params
-      .switchMap((params: Params) => {
-        this.visibility = 'hidden';
-        return this.dishService.getDish(+params['id']);
-      })
-      .subscribe(dish => {
-        this.dish = dish;
-        this.dishcopy = dish;
-        this.setPrevNext(dish.id);
-        this.visibility = 'shown';
-      }, errmess => this.errMess = <any>errmess);
+      .switchMap((params: Params) => { this.visibility = 'hidden'; return this.dishservice.getDish(params['id']); })
+      .subscribe(dish => { 
+          this.dish = dish; 
+          this.setPrevNext(dish._id); 
+          this.visibility = 'shown';
+          this.favoriteService.isFavorite(this.dish._id)
+            .subscribe(resp => { console.log(resp); this.favorite = resp.exists; },
+                err => console.log(err));
+        },
+        errmess => this.errMess = <any>errmess);
+  }
+
+  setPrevNext(dishId: String) {
+    if(this.dishIds) {
+      let index = this.dishIds.indexOf(dishId);
+      this.prev = this.dishIds[(this.dishIds.length + index - 1)%this.dishIds.length];
+      this.next = this.dishIds[(this.dishIds.length + index + 1)%this.dishIds.length];
+    }
+  }
+
+  goBack(): void {
+    this.location.back();
   }
 
   createForm() {
     this.commentForm = this.fb.group({
-      author: ['', [Validators.required, Validators.minLength(2)]],
-      rating: [1, Validators.required],
+      rating: 5,
       comment: ['', Validators.required]
     });
 
     this.commentForm.valueChanges
       .subscribe(data => this.onValueChanged(data));
 
-    this.onValueChanged(); // (re)set form validation messages
+    this.onValueChanged(); // (re)set validation messages now
   }
 
-  // parameter: data is optional
+  onSubmit() {
+    console.log(this.commentForm.value);
+    this.dishservice.postComment(this.dish._id, this.commentForm.value)
+      .subscribe(dish => this.dish = dish);
+    this.commentForm.reset({
+      rating: 5,
+      comment: ''
+    });
+    this.commentFormDirective.resetForm();
+  }
+
   onValueChanged(data?: any) {
-    if(!this.commentForm) { return; }
+    if (!this.commentForm) { return; }
     const form = this.commentForm;
-
     for (const field in this.formErrors) {
-
-      // firstly clear all fields in formErrors
+      // clear previous error message (if any)
       this.formErrors[field] = '';
-
       const control = form.get(field);
-      if(control && control.dirty && !control.valid) {
+      if (control && control.dirty && !control.valid) {
         const messages = this.validationMessages[field];
-        for(const key in control.errors) {
+        for (const key in control.errors) {
           this.formErrors[field] += messages[key] + ' ';
         }
       }
     }
   }
 
-  onSubmit() {
-    this.comment = this.commentForm.value;
-    this.comment.date = new Date().toISOString();
-    this.dishcopy.comments.push(this.comment);
-    this.dishcopy.save()
-      .subscribe(dish => this.dish = dish);
-    this.commentForm.reset({
-      author: '',
-      rating: 5,
-      comment: ''
-    });
-  }
-
-  setPrevNext(dishId: number) {
-    let index = this.dishIds.indexOf(dishId);
-    this.prev = this.dishIds[(this.dishIds.length + index - 1) % this.dishIds.length];
-    this.next = this.dishIds[(this.dishIds.length + index + 1) % this.dishIds.length];
-  }
-
-  goBack(): void {
-    this.location.back();
+  addToFavorites() {
+    console.log("Add to Favorites")
+    if (!this.favorite)
+      this.favoriteService.postFavorite(this.dish._id)
+        .subscribe(favorites => { console.log(favorites); this.favorite = true; });
   }
 }

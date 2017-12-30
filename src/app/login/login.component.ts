@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { MdDialog, MdDialogRef } from '@angular/material';
+import {MdDialog, MdDialogRef} from '@angular/material';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -8,20 +9,30 @@ import { MdDialog, MdDialogRef } from '@angular/material';
 })
 export class LoginComponent implements OnInit {
 
-  user = {
-    username: '',
-    password: '',
-    remember: false
-  };
+  user = {username: '', password: '', remember: false};
+  errMess: string;
 
-  constructor(private dialogRef: MdDialogRef<LoginComponent>) { }
+  constructor(public dialogRef: MdDialogRef<LoginComponent>,
+    private authService: AuthService) { }
 
   ngOnInit() {
   }
 
   onSubmit() {
     console.log("User: ", this.user);
-    this.dialogRef.close();
+    this.authService.logIn(this.user)
+      .subscribe(res => {
+        if (res.success) {
+          this.dialogRef.close(res.success);          
+        }
+        else {
+          console.log(res);
+        }
+      },
+      error => {
+        console.log(error);
+        this.errMess = error
+      })
   }
 
 }
